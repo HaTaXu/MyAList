@@ -100,6 +100,14 @@ func admin(g *gin.RouterGroup) {
 	user.POST("/delete", handles.DeleteUser)
 	user.POST("/del_cache", handles.DelUserCache)
 
+	userGroup := g.Group("/user_group")
+	userGroup.GET("/list", handles.ListUserGroups)
+	userGroup.GET("/get", handles.GetUserGroup)
+	userGroup.POST("/create", handles.CreateUserGroup)
+	userGroup.POST("/update", handles.UpdateUserGroup)
+	userGroup.POST("/delete", handles.DeleteUserGroup)
+	userGroup.POST("/del_cache", handles.DelUserGroupCache)
+
 	storage := g.Group("/storage")
 	storage.GET("/list", handles.ListStorages)
 	storage.GET("/get", handles.GetStorage)

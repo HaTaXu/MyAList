@@ -4,9 +4,12 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"gorm.io/gorm"
 	"time"
 
+	"github.com/alist-org/alist/v3/internal/db"
 	"github.com/alist-org/alist/v3/internal/errs"
+	"github.com/alist-org/alist/v3/internal/op"
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/alist-org/alist/v3/pkg/utils/random"
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -22,20 +25,21 @@ const (
 const StaticHashSalt = "https://github.com/alist-org/alist"
 
 type User struct {
-	ID       uint   `json:"id" gorm:"primaryKey"`                      // unique key
-	Username string `json:"username" gorm:"unique" binding:"required"` // username
-	PwdHash  string `json:"-"`                                         // password hash
-	PwdTS    int64  `json:"-"`                                         // password timestamp
-	Salt     string `json:"-"`                                         // unique salt
-	Password string `json:"password"`                                  // password
-	BasePath string `json:"base_path"`                                 // base path
-	Role     int    `json:"role"`                                      // user's role
-	Disabled bool   `json:"disabled"`
+	ID        uint   `json:"id" gorm:"primaryKey"`                      // unique key
+	Username  string `json:"username" gorm:"unique" binding:"required"` // username
+	PwdHash   string `json:"-"`                                         // password hash
+	PwdTS     int64  `json:"-"`                                         // password timestamp
+	Salt      string `json:"-"`                                         // unique salt
+	Password  string `json:"password"`                                  // password
+	UserGroup string `json:"user_group"`
+	BasePath  string `json:"base_path"` // base path
+	Role      int    `json:"role"`      // user's role
+	Disabled  bool   `json:"disabled"`
 	// Determine permissions by bit
 	//   0: can see hidden files
 	//   1: can access without password
 	//   2: can add offline download tasks
-	//   3: can add online download tasks
+	//   3: can download online
 	//   4: can mkdir and upload
 	//   5: can rename
 	//   6: can move
@@ -163,4 +167,48 @@ func (u *User) WebAuthnCredentials() []webauthn.Credential {
 
 func (u *User) WebAuthnIcon() string {
 	return "https://alist.nn.ci/logo.svg"
+}
+
+func (u *User) AfterCreate(*gorm.DB) error {
+	if u.UserGroup != "" {
+		return db.SizeIncrement(u.UserGroup)
+	}
+	return nil
+}
+
+func (u *User) AfterDelete(*gorm.DB) error {
+	if u.UserGroup != "" {
+		return db.SizeDecrement(u.UserGroup)
+	}
+	return nil
+}
+
+func (u *User) AfterUpdate(*gorm.DB) error {
+	user, err := op.GetUserById(u.ID)
+	if err != nil {
+		return err
+	}
+	if u.UserGroup != user.UserGroup {
+		if u.UserGroup != "" && user.UserGroup != "" {
+			err := db.SizeIncrement(u.UserGroup)
+			if err != nil {
+				return err
+			}
+			err = db.SizeDecrement(user.UserGroup)
+			if err != nil {
+				return err
+			}
+		} else if u.UserGroup != "" && user.UserGroup == "" {
+			err = db.SizeIncrement(u.UserGroup)
+			if err != nil {
+				return err
+			}
+		} else if u.UserGroup == "" && user.UserGroup != "" {
+			err = db.SizeDecrement(user.UserGroup)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
