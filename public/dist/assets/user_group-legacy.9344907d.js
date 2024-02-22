@@ -1,0 +1,1 @@
+System.register([],(function(e){"use strict";return{execute:function(){e("U",["see_hides","access_without_password","offline_download","online_download","write","rename","move","copy","delete","webdav_read","webdav_manage"]),e("a",{can:function(e,n){return 1==(e>>n&1)}})}}}));
