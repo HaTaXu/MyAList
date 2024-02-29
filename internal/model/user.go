@@ -7,9 +7,7 @@ import (
 	"gorm.io/gorm"
 	"time"
 
-	"github.com/alist-org/alist/v3/internal/db"
 	"github.com/alist-org/alist/v3/internal/errs"
-	"github.com/alist-org/alist/v3/internal/op"
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/alist-org/alist/v3/pkg/utils/random"
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -169,42 +167,32 @@ func (u *User) WebAuthnIcon() string {
 	return "https://alist.nn.ci/logo.svg"
 }
 
-func (u *User) AfterCreate(*gorm.DB) error {
+func (u *User) AfterCreate(db *gorm.DB) error {
 	if u.UserGroup != "" {
-		return db.SizeIncrement(u.UserGroup)
+		return db.Model(&UserGroup{}).Where("user_group_name = ?", u.UserGroup).UpdateColumn("size", gorm.Expr("size + ?", 1)).Error
 	}
 	return nil
 }
 
-func (u *User) AfterDelete(*gorm.DB) error {
+func (u *User) AfterDelete(db *gorm.DB) error {
 	if u.UserGroup != "" {
-		return db.SizeDecrement(u.UserGroup)
+		return db.Model(&UserGroup{}).Where("user_group_name = ?", u.UserGroup).UpdateColumn("size", gorm.Expr("size - ?", 1)).Error
 	}
 	return nil
 }
 
-func (u *User) AfterUpdate(*gorm.DB) error {
-	user, err := op.GetUserById(u.ID)
-	if err != nil {
-		return err
-	}
+func (u *User) BeforeUpdate(db *gorm.DB) error {
+	var user User
+	err := db.Debug().First(&user, u.ID).Error
 	if u.UserGroup != user.UserGroup {
-		if u.UserGroup != "" && user.UserGroup != "" {
-			err := db.SizeIncrement(u.UserGroup)
+		if u.UserGroup != "" {
+			err = db.Model(&UserGroup{}).Where("user_group_name = ?", u.UserGroup).UpdateColumn("size", gorm.Expr("size + ?", 1)).Error
 			if err != nil {
 				return err
 			}
-			err = db.SizeDecrement(user.UserGroup)
-			if err != nil {
-				return err
-			}
-		} else if u.UserGroup != "" && user.UserGroup == "" {
-			err = db.SizeIncrement(u.UserGroup)
-			if err != nil {
-				return err
-			}
-		} else if u.UserGroup == "" && user.UserGroup != "" {
-			err = db.SizeDecrement(user.UserGroup)
+		}
+		if user.UserGroup != "" {
+			err = db.Model(&UserGroup{}).Where("user_group_name = ?", user.UserGroup).UpdateColumn("size", gorm.Expr("size - ?", 1)).Error
 			if err != nil {
 				return err
 			}

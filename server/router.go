@@ -93,6 +93,7 @@ func admin(g *gin.RouterGroup) {
 
 	user := g.Group("/user")
 	user.GET("/list", handles.ListUsers)
+	user.GET("/listByUserGroup", handles.ListUsersByUserGroup)
 	user.GET("/get", handles.GetUser)
 	user.POST("/create", handles.CreateUser)
 	user.POST("/update", handles.UpdateUser)

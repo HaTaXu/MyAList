@@ -29,6 +29,26 @@ func ListUsers(c *gin.Context) {
 	})
 }
 
+func ListUsersByUserGroup(c *gin.Context) {
+	userGroupName := c.Query("userGroupName")
+	var req model.PageReq
+	if err := c.ShouldBind(&req); err != nil {
+		common.ErrorResp(c, err, 400)
+		return
+	}
+	req.Validate()
+	log.Debugf("%+v", req)
+	users, total, err := op.GetUsersByUserGroup(req.Page, req.PerPage, userGroupName)
+	if err != nil {
+		common.ErrorResp(c, err, 500, true)
+		return
+	}
+	common.SuccessResp(c, common.PageResp{
+		Content: users,
+		Total:   total,
+	})
+}
+
 func CreateUser(c *gin.Context) {
 	var req model.User
 	if err := c.ShouldBind(&req); err != nil {

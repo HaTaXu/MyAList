@@ -60,8 +60,19 @@ func GetUsers(pageIndex, pageSize int) (users []model.User, count int64, err err
 	return users, count, nil
 }
 
-func DeleteUserById(id uint) error {
-	return errors.WithStack(db.Delete(&model.User{}, id).Error)
+func GetUsersByUserGroup(pageIndex, pageSize int, userGroup string) (users []model.User, count int64, err error) {
+	userDB := db.Model(&model.User{})
+	if err := userDB.Count(&count).Error; err != nil {
+		return nil, 0, errors.Wrapf(err, "failed get users count")
+	}
+	if err := userDB.Offset((pageIndex-1)*pageSize).Limit(pageSize).Where("user_group = ?", userGroup).Find(&users).Error; err != nil {
+		return nil, 0, errors.Wrapf(err, "failed get find users")
+	}
+	return users, count, nil
+}
+
+func DeleteUser(u *model.User) error {
+	return errors.WithStack(db.Delete(u).Error)
 }
 
 func UpdateAuthn(userID uint, authn string) error {

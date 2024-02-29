@@ -3,7 +3,6 @@ package db
 import (
 	"github.com/alist-org/alist/v3/internal/model"
 	"github.com/pkg/errors"
-	"gorm.io/gorm"
 )
 
 func GetUserGroupByName(userGroupName string) (*model.UserGroup, error) {
@@ -43,14 +42,4 @@ func GetUserGroups(pageIndex, pageSize int) (userGroups []model.UserGroup, count
 
 func DeleteUserGroupById(id uint) error {
 	return errors.WithStack(db.Delete(&model.UserGroup{}, id).Error)
-}
-
-func SizeIncrement(userGroupName string) error {
-	userGroup := model.UserGroup{UserGroupName: userGroupName}
-	return db.Where(userGroup).Update("Size", gorm.Expr("Size + ?", 1)).Error
-}
-
-func SizeDecrement(userGroupName string) error {
-	userGroup := model.UserGroup{UserGroupName: userGroupName}
-	return db.Where(userGroup).Update("Size", gorm.Expr("Size - ?", 1)).Error
 }

@@ -68,6 +68,10 @@ func GetUsers(pageIndex, pageSize int) (users []model.User, count int64, err err
 	return db.GetUsers(pageIndex, pageSize)
 }
 
+func GetUsersByUserGroup(pageIndex, pageSize int, userGroup string) (users []model.User, count int64, err error) {
+	return db.GetUsersByUserGroup(pageIndex, pageSize, userGroup)
+}
+
 func CreateUser(u *model.User) error {
 	u.BasePath = utils.FixAndCleanPath(u.BasePath)
 	return db.CreateUser(u)
@@ -82,7 +86,7 @@ func DeleteUserById(id uint) error {
 		return errs.DeleteAdminOrGuest
 	}
 	userCache.Del(old.Username)
-	return db.DeleteUserById(id)
+	return db.DeleteUser(old)
 }
 
 func UpdateUser(u *model.User) error {
