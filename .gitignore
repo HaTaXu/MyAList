@@ -30,4 +30,6 @@ output/
 #/public/dist/*
 /!public/dist/README.md
 
+.github/FUNDING.yml
+
 .VSCodeCounter
