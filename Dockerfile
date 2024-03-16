@@ -8,7 +8,7 @@ COPY ./ ./
 RUN bash build.sh release docker
 
 FROM alpine:edge
-LABEL MAINTAINER="i@nn.ci"
+LABEL MAINTAINER="HanTx"
 VOLUME /opt/alist/data/
 WORKDIR /opt/alist/
 COPY --from=builder /app/bin/alist ./

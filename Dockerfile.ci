@@ -1,6 +1,6 @@
 FROM alpine:edge
 ARG TARGETPLATFORM
-LABEL MAINTAINER="i@nn.ci"
+LABEL MAINTAINER="HanTx"
 VOLUME /opt/alist/data/
 WORKDIR /opt/alist/
 COPY /${TARGETPLATFORM}/alist ./

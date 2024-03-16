@@ -12,5 +12,5 @@ services:
       - PGID=0
       - UMASK=022
       - TZ=UTC
-    container_name: alist
-    image: 'xhofe/alist:latest'
+    container_name: AList
+    image: 'hantx/alist:latest'
