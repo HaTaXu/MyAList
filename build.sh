@@ -26,11 +26,11 @@ ldflags="\
 "
 
 FetchWebDev() {
-  curl -L https://codeload.github.com/HaTaXu/MyAList-Web-dist/tar.gz/refs/heads/dev -o web-dist-dev.tar.gz
-  tar -zxvf web-dist-dev.tar.gz
+  curl -L https://codeload.github.com/HaTaXu/MyAList-Web-dist/tar.gz/refs/heads/dev -o MyAList-Web-dist.tar.gz
+  tar -zxvf MyAList-Web-dist.tar.gz
   rm -rf public/dist
-  mv -f web-dist-dev/dist public
-  rm -rf web-dist-dev web-dist-dev.tar.gz
+  mv -f MyAList-Web-dist/dist public
+  rm -rf MyAList-Web-dist MyAList-Web-dist.tar.gz
 }
 
 FetchWebRelease() {
