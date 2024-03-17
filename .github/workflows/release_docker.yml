@@ -24,7 +24,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: HaTaXu/MyAList
+          images: hantx/alist
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

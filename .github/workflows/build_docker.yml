@@ -22,13 +22,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: HaTaXu/MyAList
+          images: hantx/alist
 
       - name: Docker meta with ffmpeg
         id: meta-ffmpeg
         uses: docker/metadata-action@v5
         with:
-          images: HaTaXu/MyAList
+          images: hantx/alist
           flavor: |
             suffix=-ffmpeg,onlatest=true
 
