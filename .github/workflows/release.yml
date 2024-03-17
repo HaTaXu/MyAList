@@ -20,15 +20,15 @@ jobs:
           id: ${{ github.event.release.id }}
           prerelease: true
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go-version }}
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
 
       - name: Install dependencies
         run: |
@@ -42,7 +42,7 @@ jobs:
           bash build.sh release
 
       - name: Upload assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: build/compress/*
           prerelease: false

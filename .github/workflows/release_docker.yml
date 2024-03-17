@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 'stable'
 
@@ -84,8 +84,8 @@ jobs:
 
       - name: Add tag
         run: |
-          git config --local user.email "bot@nn.ci"
-          git config --local user.name "IlaBot"
+          git config --local user.email "294@bot"
+          git config --local user.name "HanTx"
           git tag -a ${{ github.ref_name }} -m "release ${{ github.ref_name }}"
 
       - name: Push tags
